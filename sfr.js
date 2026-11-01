@@ -13,3 +13,30 @@ code (should ideally be) in this order:
 */
 
 (() => {
+    if (window.__sfr) {
+        window.__sfr.show();
+        return;
+    }
+
+/*config */
+
+    const GENERIC_FAMILIES = [
+        'sans-serif',
+        'serif',
+        'monospace',
+        'cursive',
+        'fantasy',
+        'system-ui',
+        'ui-monospace',
+        'emoji',
+        'math'
+    ]
+
+    const SKIP_SELECTOR = 
+        'script, style, noscript, textarea, select, option ,svg, canvas, [data-gl]';
+
+    const MASK_PADDING_EM = 0.15
+    const DOM_CHUNK = 200;
+    const tick = () => new Promise(resolve => setTimeout(resolve, 0));
+
+})();
