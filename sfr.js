@@ -99,5 +99,37 @@ code (should ideally be) in this order:
                 name.toLowerCase()
         );
 
+/*get alpha masks*/
+    /*how do i do this exactly*/
+
+    function makeEngine(makeCanvas) {
+        const BASE_BLOCK_PX = 20
+        const MAX_EM_PX = 1200;
+        const MIN_EM_PX = 80
+
+        const geometry = p => {
+            const emPx = Math.max (
+                MIN_EM_PX, Math.min(MAX_EM_PX, p.res * BASE_BLOCK_PX / p.mult)
+            );
+            const blockPx = emPx/p.res*p.mult;
+
+            return {
+                emPx, blockPx, pad: Math.ceil(blockPx * 1.2) + 16
+            };
+        };
+
+        /*render a source glyph then excract its alpha channel*/
+
+        const extractMask = (fontOf, ch, emPx, pad) => {
+            const canvas = makeCanvas(8, 8);
+            const ctx = canvas.getContext('2d', { willReadFrequently: true })
+            ctx.font = fontOf(emPx);
+            const m = ctx.measureText(ch);
+
+            
+
+        }
+    }
+
 
 })();
