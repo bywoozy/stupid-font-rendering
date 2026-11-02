@@ -39,4 +39,65 @@ code (should ideally be) in this order:
     const DOM_CHUNK = 200;
     const tick = () => new Promise(resolve => setTimeout(resolve, 0));
 
+/*font utils*/
+    const fontAvailibility = new Map();
+    /*font is considered "installed" if it changes its width compared with the generic fallback ones*/
+    /*least jank way to do it for sure lol*/
+
+    const hasFont = name => {
+        if (fontAvailibility.has(name)) {
+            return fontAvailibility.get(name);
+        }
+    
+    const ctx = document.createElement('canvas').getContext('2d');
+    const sample = 'mmmmmmmmlliWW@#';
+
+    const found = [
+        'monospace',
+        'serif',
+        'sans-serif'
+    ].some(fallback => {
+        ctx.font = `72px ${name}, ${fallback}`;
+        const baseline = ctx.measureText(sample).width;
+        ctx.font = `72px "${fallback}"`;
+        return ctx.measureText(sample).width !== baseline;
+    });
+    fontAvailibility.set(name, found);
+    return found;
+    }
+
+
+    /*split css dont family val into plain names*/
+    const parseFontList = cssVal => {
+        const names = [];
+        const pattern = /"([^"]*)"|'([^']*)'|([^,]+)/g;
+
+        let match;
+        while ((match = pattern.exec(cssValue))) {
+            const raw = 
+                match[1] !== undefined
+                    ? match[1]
+                    : match[2] !== undefined
+                        ? match[2]
+                        : match[3];
+            const name = raw.replace(/[;"']/g, '').trim();
+
+            if (name && !GENERIC_FAMILIES.includes(name.toLowerCase())) {
+                names.push(name);
+            }
+        }
+        return names;
+    };
+
+    const pickFont = cssValue =>
+        parseFontList(cssValue).find(hasFont);
+
+    const isWebFont = name =>
+        [...document.fonts].some(
+            f =>
+                f.family.replace(/["']/g, '').toLowerCase() ===
+                name.toLowerCase()
+        );
+
+
 })();
