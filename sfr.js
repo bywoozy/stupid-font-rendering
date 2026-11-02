@@ -126,7 +126,64 @@ code (should ideally be) in this order:
             ctx.font = fontOf(emPx);
             const m = ctx.measureText(ch);
 
-            
+            if (!(m.actualBoundingBoxAscent + m.actualBoundingBoxDescent >= 1)) { return null; }
+
+            const left = Math.ceil(m.actualBoundingBoxLeft);
+            const asc = Math.ceil(m.actualBoundingBoxAscent);
+            const inkW = left + Math.ceil(m.actualBoundingBoxRight)+1;
+            const inkH = asc+Math.ceil(m.actualBoundingBoxDescent)+1;
+
+            const W = inkW +2*pad;
+            const H = inkH +2*pad;
+            const N = W*H;
+
+            if (N>8e6) return null;
+
+            canvas.width = W;
+            canvas.height = H;
+            ctx.font = fontOf(emPx);
+
+            ctx.textBaseline = 'alphabetic';
+            ctx.fillText(ch, pad+left, pad+asc);
+
+            const rgba = ctx.getImageData(0,0,W,H).data;
+            const M = new Float32Array(N);
+
+            for (let i = 0; i<N; i++) {
+                M[i] = rgba[i*4+3] /255;
+            }
+
+            /* flood fill i think */
+
+            const labels = new Int32Array(N);
+            const comps = [];
+            const stack = [];
+
+            for (let i =0; i<N; i++) {
+                if (M[i] <= 0.5 || labels[i]) continue;
+
+                const comp = {
+                    id: comps.length + 1;
+                    x0: W,
+                    y0: H,
+                    x1: 0,
+                    y1: 0,
+                    n: 0
+                };
+
+                labels[i] = comp.id;
+                stack.push(i);
+
+                while (stack.length) {
+                    const j = stack.pop();
+                    const jx = j % W;
+                    const jy = (j/W) | 0;
+
+
+                    /* continue with n++ logic john */
+                }
+            }
+
 
         }
     }
